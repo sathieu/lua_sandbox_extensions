@@ -70,7 +70,13 @@ build_lua_sandbox_extensions() {
                 fi
                 ;;
             systemd)
-                cmake_args="$cmake_args -DEXT_$ext=false"
+                if apt-cache show libsystemd-dev > /dev/null 2> /dev/null; then
+                    packages="$packages libsystemd-dev"
+                elif yum info systemd-devel > /dev/null 2>/dev/null; then
+                    packages="$packages systemd-devel"
+                else
+                    cmake_args="$cmake_args -DEXT_$ext=false"
+                fi
                 ;;
             zlib)
                 if [ "$CPACK_GENERATOR" = "DEB" ]; then
