@@ -37,7 +37,13 @@ build_lua_sandbox_extensions() {
             systemd zlib; do
         case "$ext" in
             geoip)
-                cmake_args="$cmake_args -DEXT_$ext=false"
+                if apt-cache show libgeoip-dev > /dev/null 2>/dev/null; then
+                    packages="$packages libgeoip-dev"
+                elif yum info geoip-devel > /dev/null 2>/dev/null; then
+                    packages="$packages geoip-devel"
+                else
+                    cmake_args="$cmake_args -DEXT_$ext=false"
+                fi
                 ;;
             kafka)
                 cmake_args="$cmake_args -DEXT_$ext=false"
